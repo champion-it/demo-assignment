@@ -34,15 +34,6 @@ Secret: CSMS — DB password (also written to /opt/metabase/.secrets/db_password
         on first boot via cloud-init write_files; 0600, root-owned)
 ```
 
-## ทำไม design นี้ตอบโจทย์ทุกข้อ
-
-| โจทย์ | คำตอบ |
-|---|---|
-| Provision ด้วย Terraform | provider `huaweicloud/huaweicloud` |
-| โครงสร้างเหมาะสมสำหรับ Metabase + Postgres | ELB → ECS → docker-compose (Metabase + Postgres) — single-node ที่ deploy ได้ทันที |
-| **DB ไม่เข้าถึงจาก public** | (1) Postgres container อยู่ใน Docker network `internal: true` — Docker block traffic ออก host (2) compose ไม่ publish port 5432 ออก ECS (3) ECS SG ก็ไม่เปิด 5432 |
-| Secret management | random_password gen ใน Terraform → เก็บใน CSMS + render ลง `/opt/metabase/.secrets/db_password` (0600, root-only) — Postgres + Metabase อ่านผ่าน Docker secret file mount, ไม่ใช่ env var |
-
 ## โครงสร้างไฟล์
 
 ```
@@ -109,7 +100,7 @@ terraform output metabase_url
 | Config | Source |
 |---|---|
 | DB password | `random_password` → CSMS + cloud-init `write_files` → docker-compose secret file |
-| HW AK/SK | env var (ห้าม hardcode / ห้าม commit) |
+| HW AK/SK | env var  |
 | Metabase env (non-secret) | docker-compose env block — Java timezone, MB_DB_HOST ฯลฯ |
 | Network CIDR / image / flavor | `terraform.tfvars` |
 
@@ -118,7 +109,7 @@ terraform output metabase_url
 2. SSH เข้า ECS → update `/opt/metabase/.secrets/db_password`
 3. `docker compose down && docker compose up -d`
 
-### Production hardening (ที่ assignment นี้ยังไม่ได้ทำ)
+### Production hardening
 - ใช้ **IAM Agency** ผูก ECS → cloud-init ดึง password จาก CSMS API ที่ runtime แทนการฝังใน user_data
 - HTTPS listener + SCM cert
 - Postgres backup → OBS รายวัน (cronjob `pg_dump`)
