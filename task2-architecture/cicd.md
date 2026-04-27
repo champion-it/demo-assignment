@@ -23,7 +23,7 @@ Stages:
 
 ```
 ┌──────┬───────┬───────┬──────┬────────────┬─────────────────┬──────────────────┐
-│ lint │ test  │ build │ scan │ push-image │ integration-test│ bump-gitops (dev)│
+│      │ test  │ build │ scan │ push-image │ integration-test│ bump-gitops (dev)│
 └──────┴───────┴───────┴──────┴────────────┴─────────────────┴──────────────────┘
 ```
 
