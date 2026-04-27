@@ -1,0 +1,31 @@
+# Copy to terraform.tfvars and fill in. Never commit terraform.tfvars.
+# Prefer exporting AK/SK as env vars:
+#   export HW_ACCESS_KEY=...
+#   export HW_SECRET_KEY=...
+
+hw_access_key = "REPLACE_ME"
+hw_secret_key = "REPLACE_ME"
+
+region             = "ap-southeast-3"
+availability_zones = ["ap-southeast-3a"]    # ECS + EVS use the first AZ
+
+project_name = "metabase"
+environment  = "dev"
+
+# Ubuntu 22.04 IMS image ID — look up in Console → IMS → Public Images
+# (varies per region; do not hardcode in main.tf)
+metabase_image_id = "REPLACE_WITH_UBUNTU_2204_IMAGE_ID"
+
+# 4 GB RAM minimum for Metabase + Postgres in the same VM
+metabase_flavor     = "s6.large.2"
+metabase_docker_tag = "v0.50.20"
+
+# EVS attached as /dev/vdb and mounted at /var/lib/docker — persists pg + metabase data
+data_volume_size_gb = 50
+
+# Tighten to office / VPN CIDR in prod. 0.0.0.0/0 is demo only.
+allowed_http_cidr = ["0.0.0.0/0"]
+
+# Optional: open SSH to a single CIDR for debugging
+ssh_allowed_cidr = ""
+ssh_keypair_name = ""
